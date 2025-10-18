@@ -1,0 +1,123 @@
+
+USE UniversidadBD;
+GO
+
+-- =========================
+-- TABLA: CARRERA
+-- =========================
+CREATE TABLE Carrera (
+    id_carrera INT IDENTITY(1,1) PRIMARY KEY,
+    nombre_carrera VARCHAR(100) NOT NULL,
+    facultad VARCHAR(100),
+    duracion_anios INT,
+    estado CHAR(1) DEFAULT 'A'  -- A: Activa, I: Inactiva
+);
+GO
+
+-- =========================
+-- TABLA: ESTUDIANTE
+-- =========================
+CREATE TABLE Estudiante (
+    id_estudiante INT IDENTITY(1,1) PRIMARY KEY,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    dni CHAR(8) UNIQUE NOT NULL,
+    correo_institucional VARCHAR(100),
+    fecha_ingreso DATE,
+    id_carrera INT,
+    FOREIGN KEY (id_carrera) REFERENCES Carrera(id_carrera)
+);
+GO
+
+-- =========================
+-- TABLA: PROFESOR
+-- =========================
+CREATE TABLE Profesor (
+    id_profesor INT IDENTITY(1,1) PRIMARY KEY,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    correo_institucional VARCHAR(100),
+    especialidad VARCHAR(100)
+);
+GO
+
+-- =========================
+-- TABLA: CURSO
+-- =========================
+CREATE TABLE Curso (
+    id_curso INT IDENTITY(1,1) PRIMARY KEY,
+    nombre_curso VARCHAR(100) NOT NULL,
+    creditos INT NOT NULL,
+    ciclo INT,
+    id_carrera INT,
+    id_profesor INT,
+    FOREIGN KEY (id_carrera) REFERENCES Carrera(id_carrera),
+    FOREIGN KEY (id_profesor) REFERENCES Profesor(id_profesor)
+);
+GO
+
+-- =========================
+-- TABLA: MATRICULA
+-- =========================
+CREATE TABLE Matricula (
+    id_matricula INT IDENTITY(1,1) PRIMARY KEY,
+    id_estudiante INT,
+    periodo VARCHAR(10),
+    fecha_matricula DATE,
+    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante)
+);
+GO
+
+-- =========================
+-- TABLA: DETALLE_MATRICULA
+-- =========================
+CREATE TABLE Detalle_Matricula (
+    id_detalle INT IDENTITY(1,1) PRIMARY KEY,
+    id_matricula INT,
+    id_curso INT,
+    nota_final DECIMAL(4,2),
+    estado CHAR(1) DEFAULT 'A',  -- A: Activo, R: Retirado
+    FOREIGN KEY (id_matricula) REFERENCES Matricula(id_matricula),
+    FOREIGN KEY (id_curso) REFERENCES Curso(id_curso)
+);
+GO
+
+
+-- Carreras
+INSERT INTO Carrera (nombre_carrera, facultad, duracion_anios)
+VALUES 
+('Administración de Empresas', 'Ciencias Empresariales', 5),
+('Ingeniería de Sistemas', 'Ingeniería', 5);
+
+-- Profesores
+INSERT INTO Profesor (nombres, apellidos, correo_institucional, especialidad)
+VALUES
+('Carlos', 'Ruiz Pérez', 'carlos.ruiz@ue.edu.pe', 'Gestión Empresarial'),
+('María', 'López Gamarra', 'maria.lopez@ue.edu.pe', 'Programación');
+
+-- Cursos
+INSERT INTO Curso (nombre_curso, creditos, ciclo, id_carrera, id_profesor)
+VALUES
+('Gestión Financiera', 4, 6, 1, 1),
+('Base de Datos II', 4, 5, 2, 2);
+
+-- Estudiantes
+INSERT INTO Estudiante (nombres, apellidos, dni, correo_institucional, fecha_ingreso, id_carrera)
+VALUES
+('Karen', 'Tayo Ramos', '76543210', 'karen.tayo@ue.edu.pe', '2022-03-10', 1),
+('Roberth', 'Castillo Vargas', '70876543', 'roberth.castillo@ue.edu.pe', '2023-03-10', 2);
+
+-- Matrículas
+INSERT INTO Matricula (id_estudiante, periodo, fecha_matricula)
+VALUES
+(1, '2025-I', '2025-03-05'),
+(2, '2025-I', '2025-03-06');
+
+-- Detalle de matrícula
+INSERT INTO Detalle_Matricula (id_matricula, id_curso, nota_final)
+VALUES
+(1, 1, 18.5),
+(2, 2, 17.0);
+
+
+SELECT * from dbo.Carrera;
